@@ -26,7 +26,7 @@
         </select>
 
         <label for="url">URL:</label>
-        <input type="url" id="url" name="url" required value="http://localhost:9090/api/v1/teams">
+        <input type="url" id="url" name="url" required value="">
 
         <label for="requestBody">Request Body:</label>
         <textarea id="requestBody" name="requestBody" placeholder="Enter JSON request body here"></textarea>
@@ -39,14 +39,19 @@
             <h3>Requirements</h3>
             <div class="requirement-item">
                 <label>Type:</label>
-                <select name="type[]" required>
+                <select name="type[]" required onchange="toggleHeaderNameInput(this)">
                     <option value="token">Token</option>
                     <option value="header">Header</option>
                     <option value="queryParam">Query Parameter</option>
                 </select>
 
+                <div class="header-name-field" style="display: none;">
+                    <label>Header Name:</label>
+                    <input type="text" name="headerName[]" placeholder="Enter header name">
+                </div>
+
                 <label>Value:</label>
-                <input type="text" name="value[]" required value="id_token">
+                <input type="text" name="value[]" required value="">
 
                 <label>Get From Previous:</label>
                 <input type="checkbox" name="getFromPrevious[]" checked>

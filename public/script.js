@@ -9,7 +9,15 @@ function addRequirement() {
 
     requirementItem.innerHTML = `
       <label>Type:</label>
-      <input type="text" name="type[]" required value="token">
+      <select name="type[]" required onchange="toggleHeaderNameInput(this)">
+          <option value="token">Token</option>
+          <option value="header">Header</option>
+      </select>
+
+      <div class="header-name-field" style="display: none;">
+          <label>Header Name:</label>
+          <input type="text" name="headerName[]" placeholder="Enter header name">
+      </div>
 
       <label>Value:</label>
       <input type="text" name="value[]" required value="id_token">
@@ -45,11 +53,13 @@ function addScenario() {
     const scenario = {
         requirements: Array.from(document.querySelectorAll('.requirement-item')).map(item => {
             const typeInput = item.querySelector('input[name="type[]"]');
+            const headerInput = item.querySelector('input[name="headerName[]"]');
             const valueInput = item.querySelector('input[name="value[]"]');
             const getFromPreviousInput = item.querySelector('input[name="getFromPrevious[]"]');
             return {
                 type: typeInput ? typeInput.value : '',
                 value: valueInput ? valueInput.value : '',
+                header: headerInput ? headerInput.value : '',
                 getFromPrevious: getFromPreviousInput ? getFromPreviousInput.checked : false
             };
         }),
@@ -83,7 +93,7 @@ function addCard(order, method, url) {
 // Function to submit and print all scenarios
 function submitScenarios() {
 
-    fetch('/test', {
+    fetch('/submit-scenario', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -111,4 +121,11 @@ function clearForm() {
     document.getElementById('scenarioForm').reset();
     document.getElementById('requirementsContainer').innerHTML = '';
     addRequirement(); // Add an initial requirement field
+}
+
+
+function toggleHeaderNameInput(selectElement) {
+    const requirementItem = selectElement.closest('.requirement-item');
+    const headerNameField = requirementItem.querySelector('.header-name-field');
+    headerNameField.style.display = selectElement.value === 'header' ? 'block' : 'none';
 }

@@ -36,6 +36,15 @@ function generateNextMetaDataInput(currentInput, response, requirementNextStage)
             const {token = null} = currentInput
             next.token = token
         }
+        if (getFromPrevious === true && type === "header") {
+            const {header = null} = currentInput
+            if(header){
+                next.header = header
+            }else {
+                const {name} = requirement;
+                next.header = name+"&"+  getValueByPath(response.data,  value)
+            }
+        }
         if (getFromPrevious === false && type === "isRequestLoop") {
             next.isRequestLoop = value
         }
@@ -52,39 +61,32 @@ function generateNextMetaDataInput(currentInput, response, requirementNextStage)
         }
     }
 
-    // const  {isRequestLoop, loopTime , loopedName  } = nextMetaDataInput;
-    // let loopIterations;
-    // if(isRequestLoop === true){
-    //     loopIterations = loopTime ==='ALL' ? response.data.length : loopTime;
-    // }else {
-    //      loopIterations = 1;
-    // }
-    // let data = response.data.map(d => d[loopedName]).slice(0, loopIterations);
-    //
-    // const next= {
-    //         "isRequestLoop": isRequestLoop,
-    //         "loopTime": loopIterations,
-    //         "loopedName": loopedName,
-    //         "loopedValues": data
-    //
-    // }
     return next;
 
 }
 
 function createRequestAuthorizationHeaders(currentInput) {
-    const {token = null} = currentInput
+    const {token = null , header= null} = currentInput
+    let headers={}
     if (token != null) {
-        const headers = {
-            Authorization: `Bearer ${token}`,
-            'x-api-key': '638142a5-3c49-4408-b925-843049c52ee4',
-            'Content-Type': 'application/json', // Add any other headers if needed
-        };
-
-        return headers
+        headers.Authorization = `Bearer ${token}`;
+    }
+    if (header) {
+        const [headerName, headerValue] = header.split("&");
+        if (headerName && headerValue) {
+            headers[headerName] = headerValue;
+        }
     }
 
+    return headers
 
+}
+
+function getValueByPath(obj, path) {
+    return path
+        .replace(/\[(\w+)\]/g, '.$1') // Convert array notation to dot notation
+        .split('.')
+        .reduce((acc, part) => acc && acc[part], obj); // Traverse the object
 }
 
 module.exports = {
